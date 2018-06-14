@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>JS Bin</title>
+    <!-- <link rel="stylesheet" href="./app.css"> -->
+    <link rel="stylesheet" href="./vendor/prism.css">
+    <style id='drawStyle'></style>
+    <link rel="stylesheet" href="./default.css">
+</head>
+
+<body>
+    <div class="speed-control">
+        <span data-speed='fast'>FAST</span>
+        <span  data-speed='medium'>MEDIUM</span>
+        <span  data-speed='slow'>SLOW</span>
+    </div>
+
+    <pre id="codeSpace"></pre>
+
+    <div class="container">
+        <div class="face-bg">
+            <div class="face">
+                <div class="eyes"></div>
+                <div class="eyes"></div>
+                <div class="nose"></div>
+                <div class="tongue"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="./vendor/prism.js"></script>
+    <script>
+        var speedEl = document.querySelector('.speed-control').children;
+        addClass(speedEl[2], 'active')
+        // speedEl[2].classList.add('active');
+        // console.log(speedEl[2].parentNode.children)
+            for(let i = 0; i < speedEl.length; i++) {
+                speedEl[i].onclick = function (e) {
+                    var speed = e.target.getAttribute('data-speed');
+                    addClass(e.target, 'active')
+                    switch (speed) {
+                        case 'slow':
+                            time = 50;
+                            break;
+                        case 'medium':
+                            time = 20;
+                            break;
+                        case 'fast':
+                            time = 5;
+                            break;
+                    }
+            }
+        };
+
+
+        var content = '';
+        var time = 5;
+        //function repo 
+        function printCode(code, node, css, callback) {
+                let n = 0;
+                var id = setTimeout(function fn() {
+                    var slice;
+                    css ? slice = content + code.substring(0, n) : slice = code.substring(0, n);
+                    if (node.text) {
+                        if (css) {
+                            node.html(Prism.highlight(slice, Prism.languages.css, 'css'));
+                        } else {
+                            node.text(slice);
+                        }
+                    } else {
+                        if (css) {
+                            node.innerHTML = Prism.highlight(slice, Prism.languages.css, 'css')
+                        } else {
+                            node.textContent(slice);
+                        }
+                    }
+                    if (css) drawStyle.innerHTML = slice;
+                    node.scrollTop = node.scrollHeight;
+                    n += 1;
+                    if (n < code.length) {
+                        id = setTimeout(() => {
+                            fn();
+                        }, time);
+                    } else {
+                        clearTimeout(id);
+                        if (css) content = content + code;
+                        callback && callback.call()
+                    }
+                }, 1000);
+            }
+
+
+
+
+
+
+
+            var cssCode = `
+            #codeSpace {
+    width: 300px;
+    height: 400px;
+    padding: 20px;
+    position: absolute;
+    left: 0;
+    top: 100px;
+    background: #ccc;
+    overflow-y: scroll
+}
+
+
+
+
+            .container {
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  background: #EFEFEF;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 50%;
+}
+
+.container > .face-bg {
+  width: 110px;
+  height: 110px;
+  background: #231F20;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 50%;
+   
+}
+
+.container > .face-bg::before {
+  content: '';
+  position: absolute;
+  display: block;
+  width: 60px;
+  height: 60px;
+  background: #231F20;
+  bottom: -10%;
+  left: 50%;
+  margin-left: -30px;
+  transform: rotate(45deg);
+  border-radius: 8px;
+}
+
+
+.container > .face-bg > .face {
+  position: absolute;
+  width: 52px;
+  height: 60px;
+  background: #FFFFFF;
+  z-index: 1;
+  top: 20px;
+  left: 50%;
+  margin-left: -26px;
+  border-radius: 30px/30px;
+}
+
+/* xiaba */
+.container > .face-bg > .face::after, .container > .face-bg > .face::before {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  bottom: -10px;
+  z-index: -01
+}
+
+.container > .face-bg > .face::before {
+  left: -6px;
+}
+
+.container > .face-bg > .face::after {
+  right: -6px;
+}
+
+/* eyes */
+.container > .face-bg > .face > .eyes {
+  width: 10px;
+  height: 10px;
+  background: #231F20;
+  border-radius: 50%;
+  position: absolute;
+  top: 20px;
+}
+
+.container > .face-bg > .face > .eyes:nth-child(1) {
+  left: 50%;
+  transform: translateX(-15px);
+}
+
+.container > .face-bg > .face > .eyes:nth-child(2) {
+  right: 50%;
+  transform: translateX(15px);
+}
+
+.container > .face-bg > .face > .nose {
+  position: absolute;
+  left: 50%;
+  margin-left: -9.5px;
+  bottom: 10px;
+  border:10px solid transparent;
+  transform: rotate(45deg);
+  border-right-color: #231F20;
+  border-bottom-color: #231F20;
+  border-radius: 6px;
+}
+
+.container > .face-bg > .face > .nose::after {
+  content: '';
+  transform: rotate(45deg);
+  position: absolute;
+  display: block;
+  width: 30px;
+  height: 10px;
+  background: #231F20;
+  top: 10px;
+}
+
+
+.container > .face-bg > .face > .tongue {
+  position: absolute;
+  width: 14px;
+  height: 18px;
+  background: #EA2430;
+  bottom: -45%;
+  left: 50%;
+  transform: translateX(-7px);
+  border-radius: 20px/20px;
+}
+
+.container > .face-bg > .face > .tongue::after, .container > .face-bg > .face > .tongue::before {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 6px;
+  height: 11px;
+  border-radius: 10px/10px;
+  background: #231F20;
+  top: -3px
+}
+
+.container > .face-bg > .face > .tongue::after {
+  left: -1px;
+  transform: rotate(45deg);
+}
+
+.container > .face-bg > .face > .tongue::before {
+  right: -1px;
+  transform: rotate(-45deg);
+}
+`
+function addClass(node, name) {
+    var children = node.parentNode.children;
+    for (let i = 0; i < children.length; i++) {
+        children[i].classList.remove(name);
+    }
+    node.classList.add(name);
+}
+
+
+printCode(cssCode, codeSpace, true, () => {
+        console.log('finished')
+    })
+
+    
+
+    </script>
+</body>
+
+</html>
